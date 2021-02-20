@@ -23,7 +23,26 @@ namespace wondercam {
         //% block="QrcodeScan"
         QrcodeScan,
         //% block="BarcodeScan"
-        BarcodeScan
+        BarcodeScan,
+        //% block="Number Recognition"
+        NumberRecognition,
+        //% block="Landmark Recognition"
+        LandmarkRecognition,
+    }
+
+    export enum Landmarks {
+        //% bock="NoLandmark"
+        NoLandmark,
+        //% block="Go forward"
+        GoForward = 1,
+        //% block="Turn left"
+        TurnLeft = 2,
+        //% block="Turn right"
+        TurnRight = 3,
+        //% block="Turn About"
+        TurnAbout = 4,
+        //% block="Stop"
+        Stop = 5,
     }
 
     export enum Objects {
@@ -139,6 +158,8 @@ namespace wondercam {
     }
 
     export enum DEV_ADDR {
+        //% block="0x32"
+        x32 = 0x32,
         //% block="0x21"
         x21 = 0x21,
         //% block="0x22"
@@ -149,8 +170,6 @@ namespace wondercam {
         x24 = 0x24,
         //% block="0x31"
         x31 = 0x31,
-        //% block="0x32"
-        x32 = 0x32,
         //% block="0x33"
         x33 = 0x33,
         //% block="0x34"
@@ -176,6 +195,7 @@ namespace wondercam {
     let Current = Functions.NoFunction;
     let ResultBuf: Buffer;
     let WONDERCAM_I2C_ADDR = 0x32
+
     function i2cwrite(reg: number, value: number) {
         let buf = pins.createBuffer(3)
         buf.setNumber(NumberFormat.UInt8LE, 0, reg & 0xFF)
@@ -191,24 +211,26 @@ namespace wondercam {
         pins.i2cWriteBuffer(WONDERCAM_I2C_ADDR, buf)
         return pins.i2cReadBuffer(WONDERCAM_I2C_ADDR, length)
     }
+
     function i2creadnum(reg: number): number {
         let buf = i2creadtobuf(reg, 1)
         return buf.getNumber(NumberFormat.UInt8LE, 0)
     }
+
     /**
-     * TODO:初始化I2C， 初始化WonderCam 
-     * @param dev_addr eg: DEV_ADDR.x32
-    */
+     * TODO:初始化I2C， 初始化WonderCam
+     * @param dev_addr i2c address, eg: DEV_ADDR.x32
+     */
     //% weight=180
     //% block="Initialize WonderCam at |$dev_addr|"
-    //% dev_addr.defl=DEV_ADDR.x32
-    export function wondercam_init(dev_addr: DEV_ADDR = DEV_ADDR.x32): void {
+    export function wondercam_init(dev_addr =  DEV_ADDR.x32): void {
         WONDERCAM_I2C_ADDR = dev_addr
         while (i2creadnum(0) != 'v'.charCodeAt(0)) {
             basic.showString("E")
         }
         basic.clearScreen()
     }
+
     /**
      * TODO: 获取WonderCam正在运行的功能，返回当前运行功能的序号
      */
@@ -217,6 +239,7 @@ namespace wondercam {
     export function CurrentFunc(): Functions {
         return i2creadnum(0x0035)
     }
+
     /**
      * TODO: 判断当前运行的功能是否是某个功能
      */
@@ -229,6 +252,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 获取不同功能对应的功能序号
      */
@@ -238,6 +262,7 @@ namespace wondercam {
     export function FunctoNum(func: Functions): number {
         return func
     }
+
     /**
      * TODO: 切换功能
      */
@@ -260,6 +285,7 @@ namespace wondercam {
             }
         }
     }
+
     /**
      * TODO: 开关LED
      */
@@ -269,6 +295,7 @@ namespace wondercam {
     export function TurnOnOrOffLed(newstate: LED_STATE): void {
         i2cwrite(0x0030, newstate);
     }
+
     /**
      * TODO: 设置LED亮度
      */
@@ -278,6 +305,7 @@ namespace wondercam {
     export function SetLedBrightness(newlevel: number): void {
         i2cwrite(0x0031, newlevel);
     }
+
     /**
      * TODO: 更新WonderCam的处理结果
      */
@@ -297,6 +325,14 @@ namespace wondercam {
             case Functions.Classification: //图像分类 结果地址
                 ResultBuf = i2creadtobuf(0x0C00, 128)
                 Current = Functions.Classification
+                break;
+            case Functions.NumberRecognition: //图像分类 结果地址
+                ResultBuf = i2creadtobuf(0x0D00, 128)
+                Current = Functions.NumberRecognition
+                break;
+            case Functions.LandmarkRecognition: //图像分类 结果地址
+                ResultBuf = i2creadtobuf(0x0D80, 128)
+                Current = Functions.LandmarkRecognition
                 break;
             case Functions.FeatureLearning:  //特征学习 结果地址
                 ResultBuf = i2creadtobuf(0x0E00, 128)
@@ -327,6 +363,7 @@ namespace wondercam {
                 break;
         }
     }
+
     /**
      * TODO: 是否检测到了人脸
      */
@@ -341,6 +378,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 获取识别到的人脸个数
      */
@@ -354,9 +392,10 @@ namespace wondercam {
         }
         return 0;
     }
+
     /**
-    * TODO: 是否识别到已经学习的人脸
-    */
+     * TODO: 是否识别到已经学习的人脸
+     */
     //% weight=140
     //% block="Is any learned face recognized?"
     //% subcategory="Facial recognition"
@@ -368,6 +407,7 @@ namespace wondercam {
         }
         return false;
     }
+
     /**
      * TODO: 获取识别到的已经学习的人脸个数
      */
@@ -380,6 +420,7 @@ namespace wondercam {
         }
         return 0;
     }
+
     /**
      * TODO: 获取识别到的未学习的人脸个数
      */
@@ -394,6 +435,7 @@ namespace wondercam {
         }
         return false;
     }
+
     /**
      * TODO: 获取识别到的未学习的人脸个数
      */
@@ -406,6 +448,7 @@ namespace wondercam {
         }
         return 0;
     }
+
     /**
      * TODO: 是否识别到了指定ID的人脸
      * @param id[1-5] eg: 1
@@ -476,6 +519,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 获取识别到的物品总数
      */
@@ -523,6 +567,7 @@ namespace wondercam {
         }
         return num;
     }
+
     /**
      * TODO: 获取识别到的指定物品的指定序号的结果的数据
      */
@@ -560,7 +605,7 @@ namespace wondercam {
         }
         return 0
     }
-    //图像分类
+
     /**
      * TODO: 获取最大的置信度
      */
@@ -574,6 +619,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 获取指定ID的的置信度
      */
@@ -587,6 +633,93 @@ namespace wondercam {
         }
         return 0
     }
+
+    //数字识别
+    /**
+     * TODO: 获取置信度最大的数字
+     */
+    //% weight=82 blockId=NumberWithMaxConfidence block="The most confident Number"
+    //% subcategory="Number recognition"
+    export function NumberWithMaxConfidence(): number {
+        if (Current == Functions.NumberRecognition) {
+            return ResultBuf.getNumber(NumberFormat.UInt8LE, 0x01);
+        }
+        return 0
+    }
+
+    /**
+     * TODO: 获取数字识别最大的置信度
+     */
+    //% weight=81 blockId=MaxConfidenceOfNumber block="The most confident"
+    //% id.defl=1 id.min=1 id.max=5
+    //% subcategory="Number recognition"
+    export function MaxConfidenceOfNumber(): number {
+        if (Current == Functions.NumberRecognition) {
+            let c = ResultBuf.getNumber(NumberFormat.UInt16LE, 0x02);
+            return (c / 10000.0)
+        }
+        return 0
+    }
+
+    /**
+     * TODO: 获取指定数字的的置信度
+     */
+    //% weight=80 blockId=ConfidenceOfNumber block="Confident of Number:$id"
+    //% id.defl=1 id.min=1 id.max=5
+    //% subcategory="Number recognition"
+    export function ConfidenceOfNumber(id: number): number {
+        if (Current == Functions.NumberRecognition) {
+            let c = ResultBuf.getNumber(NumberFormat.UInt16LE, 0x10 + ((id - 1) * 4))
+            return (c / 10000.0)
+        }
+        return 0
+    }
+
+    //路标识别
+    /**
+     * TODO: 获取置信度最大的路标
+     */
+    //% weight=82 blockId=LandmarkWithMaxConfidence block="The most confident Number"
+    //% subcategory="Landmark recognition"
+    export function LandmarkWithMaxConfidence(): Landmarks {
+        if (Current == Functions.LandmarkRecognition) {
+            return ResultBuf.getNumber(NumberFormat.UInt8LE, 0x01);
+        }
+        return 0
+    }
+
+    /**
+     * TODO: 获取路标识别最大的置信度
+     */
+    //% weight=81 blockId=MaxConfidenceOfLandmark block="The most confident"
+    //% subcategory="Landmark recognition"
+    export function MaxConfidenceOfLandmark(): number {
+        if (Current == Functions.LandmarkRecognition) {
+            let c = ResultBuf.getNumber(NumberFormat.UInt16LE, 0x02);
+            return (c / 10000.0)
+        }
+        return 0
+    }
+
+    /**
+     * TODO: 获取指路标的的置信度
+     */
+    //% weight=80 blockId=ConfidenceOfLandmark block="Confident of Number:$id"
+    //% id.defl=1 id.min=1 id.max=5
+    //% subcategory="Landmark recognition"
+    export function ConfidenceOfLandmark(id: Landmarks): number {
+        if (Current == Functions.LandmarkRecognition) {
+            let c = ResultBuf.getNumber(NumberFormat.UInt16LE, 0x10 + ((id - 1) * 4))
+            return (c / 10000.0)
+        }
+        return 0
+    }
+    //% weight=60 blockId=GetLandmarkObj block="|$in_|"
+    //% subcategory="Landmark recognition"
+    export function LandmarkObj(in_: Landmarks): Landmarks {
+        return in_
+    }
+
     //特征学习
     /**
      * TODO: 获取置信度最大的ID
@@ -600,6 +733,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 获取最大的置信度
      */
@@ -613,6 +747,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 获取指定ID的的置信度
      */
@@ -626,6 +761,7 @@ namespace wondercam {
         }
         return 0
     }
+
     //颜色识别
     /**
      * TODO: 是否识别到了色块
@@ -640,6 +776,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 识别到的色块总数
      */
@@ -651,6 +788,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 是否识别到了指定ID的颜色
      */
@@ -668,6 +806,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 返回指定ID颜色的位置数据
      */
@@ -702,6 +841,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 识别到的线总数
      */
@@ -713,6 +853,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 是否识别到了指定ID的线
      */
@@ -730,6 +871,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 返回指定ID的线的位置数据
      */
@@ -762,6 +904,7 @@ namespace wondercam {
         }
         return 0
     }
+
     //AprilTag
     /**
      * TODO: 是否识别到了标签
@@ -776,6 +919,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 识别到的全部标签个数
      */
@@ -787,6 +931,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 是否识别到了指定ID的标签
      */
@@ -796,7 +941,7 @@ namespace wondercam {
     export function isDetecteAprilTagId(id: number): boolean {
         if (Current == Functions.AprilTag) {
             let num = ResultBuf.getNumber(NumberFormat.Int8LE, 0x01)
-            for (let i = 2; i <  2 + num; i++) {  // 逐个对比是否有这个id
+            for (let i = 2; i < 2 + num; i++) {  // 逐个对比是否有这个id
                 if (ResultBuf.getNumber(NumberFormat.UInt8LE, i) == id) {
                     return true;
                 }
@@ -804,6 +949,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 识别到的指定ID标签个数
      */
@@ -822,7 +968,7 @@ namespace wondercam {
         return count
     }
 
-    
+
     /**
      * TODO: 返回指定标签的位置数据
      */
@@ -830,7 +976,7 @@ namespace wondercam {
     //% index.defl=1 index.min=1
     //% id.defl=0
     //% subcategory="AprilTag"
-    export function getTagDataId(opt: AprilTag_Options,index: number, id: number): number {
+    export function getTagDataId(opt: AprilTag_Options, index: number, id: number): number {
         if (Current == Functions.AprilTag) {
             let num = ResultBuf.getNumber(NumberFormat.Int8LE, 0x01)
             for (let i = 2; i < 2 + num; i++) {  // 逐个对比是否有这个id
@@ -869,7 +1015,8 @@ namespace wondercam {
         }
         return 0
     }
-    //QrCode 
+
+    //QrCode
     /**
      * TODO: 是否识别到了二维码
      */
@@ -883,6 +1030,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 是否识别到了指定ID的二维码
      */
@@ -911,6 +1059,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 以字符串形式返回识别到的二维码的数据
      */
@@ -922,6 +1071,7 @@ namespace wondercam {
         }
         return ""
     }
+
     /**
      * TODO: 以数组形式返回识别到的二维码的数据
      */
@@ -933,6 +1083,7 @@ namespace wondercam {
         }
         return []
     }
+
     //
     //BarCode 
     /**
@@ -949,6 +1100,7 @@ namespace wondercam {
         }
         return false
     }
+
     /**
      * TODO: 是否识别到了指定ID的条形码
      */
@@ -977,6 +1129,7 @@ namespace wondercam {
         }
         return 0
     }
+
     /**
      * TODO: 以字符串形式返回识别到的条形码的数据
      */
@@ -988,6 +1141,7 @@ namespace wondercam {
         }
         return ""
     }
+
     /**
      * TODO: 以数组形式返回识别到的条形码的数据
      */
