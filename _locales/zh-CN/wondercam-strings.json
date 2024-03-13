@@ -68,7 +68,7 @@
     "wondercam.Line_Options.Start_X|block":"起始点X坐标",
     "wondercam.Line_Options.Start_Y|block":"起始点Y坐标",
     "wondercam.Line_Options.END_X|block":"结束点X坐标",
-    "wondercam.Line_Options.END_Y|block":"结束点X坐标",
+    "wondercam.Line_Options.END_Y|block":"结束点Y坐标",
     "wondercam.Line_Options.Angle|block":"夹角",
     "wondercam.Line_Options.Offset|block":"偏移",
 
