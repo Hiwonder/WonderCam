@@ -596,7 +596,7 @@ namespace wondercam {
     /**
      * TODO: 获取置信度最大的ID
      */
-    //% weight=82 blockId=MaxConfidenceID block="The most confident ID"
+    //% weight=82 blockId=MaxConfidenceID block="The most confident ID of classification"
     //% id.defl=1 id.min=1 id.max=20
     //% subcategory="Classification"
     export function MaxConfidenceID(): number {
@@ -609,7 +609,7 @@ namespace wondercam {
     /**
      * TODO: 获取最大的置信度
      */
-    //% weight=81 blockId=MaxConfidence block="The most confident"
+    //% weight=81 blockId=MaxConfidence block="The most confident of classification"
     //% id.defl=1 id.min=1 id.max=20
     //% subcategory="Classification"
     export function MaxConfidence(): number {
@@ -623,7 +623,7 @@ namespace wondercam {
     /**
      * TODO: 获取指定ID的的置信度
      */
-    //% weight=80 blockId=ConfidenceOfId block="Confident of ID:$id"
+    //% weight=80 blockId=ConfidenceOfId block="Classification confident of ID:$id"
     //% id.defl=1 id.min=1 id.max=20
     //% subcategory="Classification"
     export function ConfidenceOfIdClassification(id: number): number {
@@ -650,7 +650,7 @@ namespace wondercam {
     /**
      * TODO: 获取数字识别最大的置信度
      */
-    //% weight=81 blockId=MaxConfidenceOfNumber block="The most confident"
+    //% weight=81 blockId=MaxConfidenceOfNumber block="The most confident of number recognition"
     //% id.defl=1 id.min=1 id.max=5
     //% subcategory="Number recognition"
     export function MaxConfidenceOfNumber(): number {
@@ -679,7 +679,7 @@ namespace wondercam {
     /**
      * TODO: 获取置信度最大的路标
      */
-    //% weight=82 blockId=LandmarkWithMaxConfidence block="The most confident Number"
+    //% weight=82 blockId=LandmarkWithMaxConfidence block="The most confident landmark"
     //% subcategory="Landmark recognition"
     export function LandmarkWithMaxConfidence(): Landmarks {
         if (Current == Functions.LandmarkRecognition) {
@@ -691,7 +691,7 @@ namespace wondercam {
     /**
      * TODO: 获取路标识别最大的置信度
      */
-    //% weight=81 blockId=MaxConfidenceOfLandmark block="The most confident"
+    //% weight=81 blockId=MaxConfidenceOfLandmark block="The most confident of landmark recognition"
     //% subcategory="Landmark recognition"
     export function MaxConfidenceOfLandmark(): number {
         if (Current == Functions.LandmarkRecognition) {
@@ -704,7 +704,7 @@ namespace wondercam {
     /**
      * TODO: 获取指路标的的置信度
      */
-    //% weight=80 blockId=ConfidenceOfLandmark block="Confident of Number:$id"
+    //% weight=80 blockId=ConfidenceOfLandmark block="Confident of landmark:$id"
     //% id.defl=1 id.min=1 id.max=5
     //% subcategory="Landmark recognition"
     export function ConfidenceOfLandmark(id: Landmarks): number {
@@ -724,7 +724,7 @@ namespace wondercam {
     /**
      * TODO: 获取置信度最大的ID
      */
-    //% weight=82 block="The most confident ID"
+    //% weight=82 block="The most confident ID of featureLearning"
     //% id.defl=1 id.min=1 id.max=20
     //% subcategory="FeatureLearning"
     export function FlMaxConfidenceID(): number {
@@ -737,7 +737,7 @@ namespace wondercam {
     /**
      * TODO: 获取最大的置信度
      */
-    //% weight=81 block="The most confident"
+    //% weight=81 block="The most confident of featureLearning"
     //% id.defl=1 id.min=1 id.max=20
     //% subcategory="FeatureLearning"
     export function FlMaxConfidence(): number {
@@ -751,7 +751,7 @@ namespace wondercam {
     /**
      * TODO: 获取指定ID的的置信度
      */
-    //% weight=80 block="Confident of ID:$id"
+    //% weight=80 block="FeatureLearning confident of ID:$id"
     //% id.defl=1 id.min=1 id.max=7
     //% subcategory="FeatureLearning"
     export function FlConfidenceOfId(id: number): number {
